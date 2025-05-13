@@ -1,6 +1,12 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import path from "path";
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const rootDir = path.resolve(__dirname, '..');
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // API routes for Node12.com project guide
@@ -30,6 +36,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       ]
     });
+  });
+
+  // Route for the landing page
+  app.get('/', (req, res) => {
+    res.sendFile(path.join(rootDir, 'index.html'));
   });
 
   const httpServer = createServer(app);
