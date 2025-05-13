@@ -137,7 +137,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // This is critical for SPA routing - send all non-API routes to index.html
+  // Explicitly define each route for clarity
+  app.get('/ssl', (req, res) => {
+    res.sendFile(process.cwd() + '/client/index.html');
+  });
+  
+  app.get('/analytics', (req, res) => {
+    res.sendFile(process.cwd() + '/client/index.html');
+  });
+  
+  app.get('/design-system', (req, res) => {
+    res.sendFile(process.cwd() + '/client/index.html');
+  });
+  
+  app.get('/test', (req, res) => {
+    res.sendFile(process.cwd() + '/client/index.html');
+  });
+  
+  app.get('/admin', (req, res) => {
+    res.sendFile(process.cwd() + '/client/index.html');
+  });
+  
+  // This is critical for SPA routing - send all remaining non-API routes to index.html
   // so that the React router can handle them
   app.get('*', (req, res, next) => {
     // If it's an API request or a static file request, continue to the next handler
