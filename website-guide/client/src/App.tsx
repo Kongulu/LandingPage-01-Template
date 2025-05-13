@@ -35,15 +35,23 @@ function Router() {
     
     // Log current path for debugging
     console.log("Current path:", path);
+    console.log("Window location:", window.location.href);
+    console.log("Rendering component for path:", path);
     
     // Update path when the URL changes
     const handleUrlChange = () => {
-      setPath(getCurrentPath());
+      const newPath = getCurrentPath();
+      console.log("URL changed, new path:", newPath);
+      setPath(newPath);
     };
     
     window.addEventListener('popstate', handleUrlChange);
+    
+    // Force an immediate path check
+    handleUrlChange();
+    
     return () => window.removeEventListener('popstate', handleUrlChange);
-  }, [path]);
+  }, []);
   
   // Render the appropriate component based on the current path
   return (
