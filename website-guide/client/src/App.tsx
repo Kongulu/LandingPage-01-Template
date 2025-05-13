@@ -67,10 +67,84 @@ function Router() {
   );
 }
 
+function NavigationBar() {
+  const [currentPath, setCurrentPath] = useState('');
+  
+  useEffect(() => {
+    setCurrentPath(window.location.pathname);
+  }, []);
+  
+  return (
+    <div style={{
+      background: 'linear-gradient(to right, #2563eb, #4f46e5)',
+      color: 'white',
+      padding: '15px 0',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      textAlign: 'center',
+      width: '100%',
+      position: 'sticky',
+      top: 0,
+      zIndex: 1000
+    }}>
+      <div style={{
+        maxWidth: '80rem',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        paddingLeft: '1rem',
+        paddingRight: '1rem'
+      }}>
+        <div style={{
+          fontWeight: 'bold',
+          fontSize: '18px',
+          marginBottom: '10px'
+        }}>
+          Node12.com Project Separation
+        </div>
+        <nav style={{
+          display: 'flex',
+          justifyContent: 'center',
+          flexWrap: 'wrap',
+          gap: '10px'
+        }}>
+          {[
+            { text: 'Home', url: '/' },
+            { text: 'SSL', url: '/ssl' },
+            { text: 'Analytics', url: '/analytics' },
+            { text: 'Design System', url: '/design-system' },
+            { text: 'Admin', url: '/admin' },
+            { text: 'Bookmark Converter', url: 'https://bookmarkconverter.replit.app', external: true }
+          ].map(link => (
+            <a 
+              key={link.url}
+              href={link.url}
+              style={{
+                color: 'white',
+                textDecoration: 'none',
+                padding: '5px 15px',
+                borderRadius: '4px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                transition: 'background-color 0.2s',
+                backgroundColor: currentPath === link.url ? 'rgba(255, 255, 255, 0.2)' : undefined,
+                fontWeight: currentPath === link.url ? 'bold' : undefined
+              }}
+              target={link.external ? '_blank' : undefined}
+              rel={link.external ? 'noopener noreferrer' : undefined}
+            >
+              {link.text}
+            </a>
+          ))}
+        </nav>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+        <NavigationBar />
         <Router />
         <QuickTips />
         <FeedbackContainer position="bottom-right" />
