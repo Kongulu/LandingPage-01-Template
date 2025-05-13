@@ -137,5 +137,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // This is critical for SPA routing - send all non-API routes to index.html
+  // so that the React router can handle them
+  app.get('*', (req, res, next) => {
+    // If it's an API request or a static file request, continue to the next handler
+    if (req.path.startsWith('/api/') || req.path.includes('.')) {
+      return next();
+    }
+    
+    // For all other requests, serve the index.html file
+    res.sendFile('index.html', { root: './client' });
+  });
+
   return server;
 }
