@@ -146,7 +146,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     
     // For all other requests, serve the index.html file
-    res.sendFile('index.html', { root: './client' });
+    res.sendFile(process.cwd() + '/client/index.html');
   });
 
   return server;
