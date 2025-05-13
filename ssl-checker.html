@@ -444,22 +444,32 @@
                                 resultError.textContent = data.error;
                                 
                                 // Customize the browser explanation based on the error
-                                if (data.error.includes('CERT_COMMON_NAME_INVALID')) {
+                                if (data.error.includes('Hostname/IP does not match certificate') || 
+                                    data.error.includes('altnames') || 
+                                    data.error.includes('CERT_COMMON_NAME_INVALID')) {
+                                    
                                     browserExplanation.innerHTML = 
-                                        'The certificate is not valid for this domain name. This often happens when a certificate ' +
-                                        'was issued for a different domain (e.g., www.example.com vs example.com). ' +
-                                        'Browsers will show a "Your connection is not private" warning.';
+                                        '<strong>Domain Mismatch Error:</strong> The SSL certificate is not valid for this domain name. ' +
+                                        'This happens when:<br><br>' +
+                                        '1. The certificate was issued for a different domain (e.g., for "*.replit.app" but used on "www.node12.com")<br>' +
+                                        '2. You\'re using a custom domain that points to a hosting service without proper SSL setup<br>' +
+                                        '3. There\'s a misconfiguration in the DNS or hosting setup<br><br>' +
+                                        '<strong>How to fix:</strong><br>' +
+                                        '- If using a custom domain with Replit, follow <a href="https://docs.replit.com/hosting/hosting-web-pages/custom-domains" target="_blank">Replit\'s guide for setting up custom domains</a><br>' +
+                                        '- Purchase a properly issued SSL certificate for this domain<br>' +
+                                        '- Set up proper SSL certificate binding for this domain on your hosting provider';
+                                        
                                 } else if (data.error.includes('CERT_HAS_EXPIRED')) {
                                     browserExplanation.innerHTML = 
-                                        'The certificate has expired. The site owner needs to renew the SSL certificate. ' +
+                                        '<strong>Expired Certificate:</strong> The certificate has expired. The site owner needs to renew the SSL certificate. ' +
                                         'Browsers will show a security warning until this is fixed.';
                                 } else if (data.error.includes('UNABLE_TO_VERIFY_LEAF_SIGNATURE')) {
                                     browserExplanation.innerHTML = 
-                                        'This appears to be a self-signed certificate or one not issued by a trusted authority. ' +
+                                        '<strong>Untrusted Certificate:</strong> This appears to be a self-signed certificate or one not issued by a trusted authority. ' +
                                         'Browsers will display a security warning when users visit this site.';
                                 } else {
                                     browserExplanation.innerHTML = 
-                                        'This certificate has validation issues. Browsers will show security warnings ' +
+                                        '<strong>Certificate Validation Error:</strong> This certificate has validation issues. Browsers will show security warnings ' +
                                         'when users try to access this site. Users will need to click through security ' +
                                         'warnings, which is not recommended for sensitive information.';
                                 }

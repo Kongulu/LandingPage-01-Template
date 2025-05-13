@@ -68,15 +68,38 @@ async function checkSSLCertificate(domain: string): Promise<SSLResult> {
             timeout: 5000,
           },
           (res) => {
+            // Extract helpful information from the error message
+            let errorDetails = err.message;
+            let issuerName = "Unknown Authority";
+            
+            // Parse the certificate details if available from the TLS socket
+            try {
+              if (res.socket && 'getPeerCertificate' in res.socket) {
+                // @ts-ignore - TypeScript doesn't know about TLS socket methods
+                const cert = res.socket.getPeerCertificate();
+                if (cert && cert.subject) {
+                  // Try to get more helpful information about the certificate
+                  issuerName = cert.issuer?.O || cert.issuer?.CN || "Unknown Authority";
+                  
+                  // Add more details about valid domains if this is a domain mismatch
+                  if (err.message.includes('altnames') && cert.subjectaltname) {
+                    errorDetails = `Certificate validation failed: Hostname/IP does not match certificate's altnames: Host: ${domain}. is not in the cert's altnames: ${cert.subjectaltname}`;
+                  }
+                }
+              }
+            } catch (parseErr) {
+              console.error("Error parsing certificate:", parseErr);
+            }
+            
             // Connection succeeded but certificate didn't pass strict validation
             resolve({
               domain,
               valid: false,
-              issuer: "Unknown Authority",
+              issuer: issuerName,
               validFrom: new Date().toISOString(),
               validTo: new Date().toISOString(),
               daysRemaining: 0,
-              error: "Certificate validation failed: " + err.message,
+              error: errorDetails,
             });
           }
         );
