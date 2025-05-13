@@ -1,4 +1,4 @@
-import { Express, Request, Response } from "express";
+import express, { Express, Request, Response } from "express";
 import { Server, createServer } from "http";
 import { storage } from "./storage";
 import https from 'https';
@@ -144,7 +144,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Serve static files from the client directory
-  app.use(express.static(process.cwd() + '/client'));
+  app.use('/', express.static(process.cwd() + '/client'));
   
   // Define specific routes to serve the corresponding index.html files
   app.get('/', (req, res) => {

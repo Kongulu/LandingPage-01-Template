@@ -1,4 +1,4 @@
-import { Route, Switch, useLocation } from "wouter";
+import { useEffect, useState } from "react";
 import Home from "@/pages/Home";
 import Admin from "@/pages/Admin";
 import Analytics from "@/pages/Analytics";
@@ -13,33 +13,48 @@ import PageTransition from "@/components/PageTransition";
 import QuickTips from "@/components/QuickTips";
 import FeedbackContainer from "@/components/FeedbackSystem";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
-import { useEffect } from "react";
 import { feedback } from "@/components/FeedbackSystem";
+import NavigationMenu from "@/components/NavigationMenu";
+
+function getCurrentPath() {
+  // Get the pathname from the current URL
+  const pathname = window.location.pathname;
+  
+  // Remove trailing slash if present
+  return pathname.endsWith('/') && pathname.length > 1 
+    ? pathname.slice(0, -1) 
+    : pathname;
+}
 
 function Router() {
-  const [location] = useLocation();
+  const [path, setPath] = useState(getCurrentPath());
   
   useEffect(() => {
     // Show a welcome feedback message when the app loads
     feedback.info("Welcome to the Project Separation Guide!");
     
     // Log current path for debugging
-    console.log("Current path:", location);
-  }, [location]);
+    console.log("Current path:", path);
+    
+    // Update path when the URL changes
+    const handleUrlChange = () => {
+      setPath(getCurrentPath());
+    };
+    
+    window.addEventListener('popstate', handleUrlChange);
+    return () => window.removeEventListener('popstate', handleUrlChange);
+  }, [path]);
   
+  // Render the appropriate component based on the current path
   return (
-    <PageTransition location={location}>
-      <Switch>
-        {/* Routes are now relative to the base path set in main.tsx */}
-        <Route path="/" component={Home} />
-        <Route path="/admin" component={Admin} />
-        <Route path="/analytics" component={Analytics} />
-        <Route path="/design-system" component={DesignSystemPage} />
-        <Route path="/ssl" component={SSLPage} />
-        <Route path="/test" component={TestPage} />
-        {/* Catch-all route must be last */}
-        <Route component={NotFound} />
-      </Switch>
+    <PageTransition location={path}>
+      {path === '/' && <Home />}
+      {path === '/admin' && <Admin />}
+      {path === '/analytics' && <Analytics />}
+      {path === '/design-system' && <DesignSystemPage />}
+      {path === '/ssl' && <SSLPage />}
+      {path === '/test' && <TestPage />}
+      {!['/admin', '/analytics', '/design-system', '/ssl', '/test', '/'].includes(path) && <NotFound />}
     </PageTransition>
   );
 }
@@ -48,6 +63,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+        <NavigationMenu />
         <Router />
         <QuickTips />
         <FeedbackContainer position="bottom-right" />
