@@ -1,6 +1,6 @@
 import ThemeToggle from "./ThemeToggle";
 import { Link, useLocation } from "wouter";
-import { Settings, BarChart, Palette } from "lucide-react";
+import { Settings, BarChart, Palette, Shield } from "lucide-react";
 
 export default function Header() {
   const [location] = useLocation();
@@ -40,6 +40,18 @@ export default function Header() {
                     }`}>
                       <Palette className="h-4 w-4 mr-1" />
                       Design System
+                    </a>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/ssl">
+                    <a className={`flex items-center transition-colors duration-300 ${
+                      location === "/ssl" 
+                        ? "text-primary font-medium" 
+                        : "text-gray-600 dark:text-gray-300 hover:text-primary"
+                    }`}>
+                      <Shield className="h-4 w-4 mr-1" />
+                      SSL Manager
                     </a>
                   </Link>
                 </li>

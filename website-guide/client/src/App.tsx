@@ -3,6 +3,7 @@ import Home from "@/pages/Home";
 import Admin from "@/pages/Admin";
 import Analytics from "@/pages/Analytics";
 import DesignSystemPage from "@/pages/DesignSystemPage";
+import SSLPage from "@/pages/SSLPage";
 import NotFound from "@/pages/not-found";
 import { Toaster } from "@/components/ui/toaster";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -29,6 +30,7 @@ function Router() {
         <Route path="/admin" component={Admin} />
         <Route path="/analytics" component={Analytics} />
         <Route path="/design-system" component={DesignSystemPage} />
+        <Route path="/ssl" component={SSLPage} />
         <Route component={NotFound} />
       </Switch>
     </PageTransition>
