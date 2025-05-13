@@ -1,6 +1,6 @@
 import ThemeToggle from "./ThemeToggle";
 import { Link, useLocation } from "wouter";
-import { Settings, BarChart } from "lucide-react";
+import { Settings, BarChart, Palette } from "lucide-react";
 
 export default function Header() {
   const [location] = useLocation();
@@ -31,6 +31,18 @@ export default function Header() {
                 </li>
                 <li><a href="#" className="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors duration-300">Documentation</a></li>
                 <li><a href="https://bookmarkconverter.replit.app" className="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors duration-300">Bookmark Converter</a></li>
+                <li>
+                  <Link href="/design-system">
+                    <a className={`flex items-center transition-colors duration-300 ${
+                      location === "/design-system" 
+                        ? "text-primary font-medium" 
+                        : "text-gray-600 dark:text-gray-300 hover:text-primary"
+                    }`}>
+                      <Palette className="h-4 w-4 mr-1" />
+                      Design System
+                    </a>
+                  </Link>
+                </li>
                 <li>
                   <Link href="/analytics">
                     <a className={`flex items-center transition-colors duration-300 ${

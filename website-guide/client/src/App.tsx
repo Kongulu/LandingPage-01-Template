@@ -2,6 +2,7 @@ import { Route, Switch, useLocation } from "wouter";
 import Home from "@/pages/Home";
 import Admin from "@/pages/Admin";
 import Analytics from "@/pages/Analytics";
+import DesignSystemPage from "@/pages/DesignSystemPage";
 import NotFound from "@/pages/not-found";
 import { Toaster } from "@/components/ui/toaster";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -27,6 +28,7 @@ function Router() {
         <Route path="/" component={Home} />
         <Route path="/admin" component={Admin} />
         <Route path="/analytics" component={Analytics} />
+        <Route path="/design-system" component={DesignSystemPage} />
         <Route component={NotFound} />
       </Switch>
     </PageTransition>
