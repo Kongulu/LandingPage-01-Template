@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Node12.com Project Separation</title>
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      color: #333;
+      background-color: #f5f7fa;
+    }
+    
+    .navigation {
+      background: linear-gradient(to right, #2563eb, #4f46e5);
+      color: white;
+      padding: 15px 0;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .nav-title {
+      font-size: 20px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    
+    .nav-links {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    
+    .nav-link {
+      color: white;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+    
+    .nav-link:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+    }
+    
+    .nav-link.active {
+      background-color: rgba(255, 255, 255, 0.2);
+      font-weight: 600;
+    }
+    
+    .header {
+      padding: 20px 0;
+      border-bottom: 1px solid #e2e8f0;
+      background-color: white;
+    }
+    
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #3b82f6;
+    }
+    
+    .subtitle {
+      color: #6b7280;
+      font-size: 14px;
+      display: inline-block;
+      padding: 4px 8px;
+      background-color: #f1f5f9;
+      border-radius: 4px;
+      margin-left: 10px;
+    }
+    
+    .page-title {
+      text-align: center;
+      padding: 40px 0;
+    }
+    
+    .page-title h1 {
+      font-size: 32px;
+      margin: 0 0 10px 0;
+    }
+    
+    .page-title p {
+      color: #6b7280;
+      font-size: 18px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .content {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      margin: 20px 0;
+      padding: 30px;
+    }
+    
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-top: 0;
+      margin-bottom: 20px;
+      color: #1e3a8a;
+      border-left: 4px solid #3b82f6;
+      padding-left: 12px;
+    }
+    
+    .step {
+      margin-bottom: 40px;
+    }
+    
+    .step-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .step-number {
+      background-color: #3b82f6;
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-right: 12px;
+    }
+    
+    .step-title {
+      font-size: 24px;
+      font-weight: 600;
+    }
+    
+    .instruction {
+      margin-bottom: 10px;
+    }
+    
+    .instruction-text {
+      margin-left: 48px;
+      color: #4b5563;
+    }
+    
+    .code-block {
+      background-color: #f1f5f9;
+      padding: 15px;
+      border-radius: 6px;
+      font-family: monospace;
+      margin: 10px 0 20px 48px;
+      white-space: pre;
+      overflow-x: auto;
+    }
+    
+    .note {
+      background-color: #fffbeb;
+      border-left: 4px solid #f59e0b;
+      padding: 15px;
+      margin: 20px 0 20px 48px;
+      border-radius: 0 6px 6px 0;
+    }
+    
+    .note-title {
+      font-weight: 600;
+      color: #b45309;
+      margin-bottom: 5px;
+    }
+    
+    .note-content {
+      color: #78350f;
+    }
+    
+    .button {
+      display: inline-block;
+      background-color: #3b82f6;
+      color: white;
+      font-weight: 500;
+      padding: 10px 20px;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: background-color 0.2s;
+    }
+    
+    .button:hover {
+      background-color: #2563eb;
+    }
+    
+    .button-outline {
+      display: inline-block;
+      border: 2px solid #3b82f6;
+      color: #3b82f6;
+      font-weight: 500;
+      padding: 8px 18px;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    
+    .button-outline:hover {
+      background-color: #3b82f6;
+      color: white;
+    }
+    
+    @media (max-width: 768px) {
+      .step-title {
+        font-size: 20px;
+      }
+      
+      .instruction-text, .code-block, .note {
+        margin-left: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar (Blue Gradient) -->
+  <div class="navigation">
+    <div class="container">
+      <div class="nav-title">Node12.com Project Separation</div>
+      <div class="nav-links">
+        <a href="#" class="nav-link active">Home</a>
+        <a href="#" class="nav-link">SSL</a>
+        <a href="#" class="nav-link">Analytics</a>
+        <a href="#" class="nav-link">Design System</a>
+        <a href="#" class="nav-link">Admin</a>
+        <a href="https://bookmarkconverter.replit.app" class="nav-link" target="_blank">Bookmark Converter</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Site Header -->
+  <header class="header">
+    <div class="container">
+      <span class="logo">Node12.com</span>
+      <span class="subtitle">Project Guide</span>
+    </div>
+  </header>
+  
+  <!-- Page Title -->
+  <div class="page-title">
+    <div class="container">
+      <h1>Separating Your Projects</h1>
+      <p>Follow this guide to separate your Node12.com website and Bookmark Converter into two distinct Replit projects</p>
+    </div>
+  </div>
+  
+  <!-- Main Content -->
+  <div class="container">
+    <div class="content">
+      <h2 class="section-title">Current Situation</h2>
+      <p>The bookmark converter functionality and the Node12.com website are currently within the same Replit project. This guide will help you separate them into two distinct projects while maintaining your existing landing page design.</p>
+    </div>
+    
+    <div class="content">
+      <div class="step">
+        <div class="step-header">
+          <div class="step-number">1</div>
+          <div class="step-title">Create a New Project for Node12.com</div>
+        </div>
+        
+        <div class="instruction">
+          <div class="instruction-text">From your Replit dashboard, click "+ Create Repl"</div>
+        </div>
+        
+        <div class="instruction">
+          <div class="instruction-text">Select "Node.js" or "React" template (depending on what you want for Node12.com)</div>
+        </div>
+        
+        <div class="instruction">
+          <div class="instruction-text">Name it "Node12Domain"</div>
+        </div>
+        
+        <div class="instruction">
+          <div class="instruction-text">Click "Create Repl"</div>
+        </div>
+        
+        <a href="https://replit.com/~" class="button" style="margin-left: 48px; margin-top: 20px;" target="_blank">Go to Replit Dashboard</a>
+      </div>
+      
+      <div class="step">
+        <div class="step-header">
+          <div class="step-number">2</div>
+          <div class="step-title">Set Up the Node12.com Site in the New Project</div>
+        </div>
+        
+        <div class="instruction">
+          <div class="instruction-text">In the new project, create a basic website structure.</div>
+        </div>
+        
+        <div class="instruction">
+          <div class="instruction-text"><strong>Option 1:</strong> Copy your existing landing page code from your original project to the new project. This preserves your current design.</div>
+        </div>
+        
+        <div class="code-block">LandingPage.tsx → Copy to new project</div>
+        
+        <div class="instruction">
+          <div class="instruction-text"><strong>Option 2:</strong> Create a simple placeholder page for now.</div>
+        </div>
+        
+        <div class="code-block">// index.js or index.html // Create a basic structure with your existing design elements</div>
+        
+        <div class="note">
+          <div class="note-title">📝 Make sure to maintain the visual identity and design</div>
+          <div class="note-content">Keep the same color scheme, typography, and overall look and feel to ensure brand consistency across your separated projects.</div>
+        </div>
+      </div>
+      
+      <div class="step">
+        <div class="step-header">
+          <div class="step-number">3</div>
+          <div class="step-title">Configure Domain for the New Project</div>
+        </div>
+        
+        <div class="instruction">
+          <div class="instruction-text">Configure your domain settings to point to the new Node12.com project.</div>
+        </div>
+        
+        <div class="instruction">
+          <div class="instruction-text">Leave the bookmark converter in the original project with its own separate domain or subdomain.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

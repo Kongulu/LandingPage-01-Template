@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SSL Manager | Node12.com</title>
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      color: #333;
+      background-color: #f5f7fa;
+    }
+    
+    .navigation {
+      background: linear-gradient(to right, #2563eb, #4f46e5);
+      color: white;
+      padding: 15px 0;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .nav-title {
+      font-size: 20px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    
+    .nav-links {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    
+    .nav-link {
+      color: white;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+    
+    .nav-link:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+    }
+    
+    .nav-link.active {
+      background-color: rgba(255, 255, 255, 0.2);
+      font-weight: 600;
+    }
+    
+    .header {
+      padding: 20px 0;
+      border-bottom: 1px solid #e2e8f0;
+      background-color: white;
+    }
+    
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #3b82f6;
+    }
+    
+    .subtitle {
+      color: #6b7280;
+      font-size: 14px;
+      display: inline-block;
+      padding: 4px 8px;
+      background-color: #f1f5f9;
+      border-radius: 4px;
+      margin-left: 10px;
+    }
+    
+    .page-title {
+      text-align: center;
+      padding: 40px 0;
+      background-color: #e0e7ff;
+    }
+    
+    .page-title h1 {
+      font-size: 32px;
+      margin: 0 0 10px 0;
+      color: #1e3a8a;
+    }
+    
+    .page-title p {
+      color: #4f46e5;
+      font-size: 18px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .content {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      margin: 20px 0;
+      padding: 30px;
+    }
+    
+    .ssl-check {
+      margin-top: 30px;
+    }
+    
+    .input-group {
+      display: flex;
+      margin-bottom: 20px;
+    }
+    
+    input[type="text"] {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px 0 0 6px;
+      font-size: 16px;
+    }
+    
+    button {
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 0 6px 6px 0;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    button:hover {
+      background-color: #2563eb;
+    }
+    
+    .ssl-result {
+      margin-top: 30px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    .result-header {
+      background-color: #f1f5f9;
+      padding: 15px 20px;
+      font-weight: 600;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .result-body {
+      padding: 20px;
+    }
+    
+    .result-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    
+    .result-label {
+      font-weight: 500;
+      color: #6b7280;
+    }
+    
+    .valid {
+      color: #16a34a;
+      font-weight: 600;
+    }
+    
+    .invalid {
+      color: #dc2626;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar (Blue Gradient) -->
+  <div class="navigation">
+    <div class="container">
+      <div class="nav-title">Node12.com Project Separation</div>
+      <div class="nav-links">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/ssl" class="nav-link active">SSL</a>
+        <a href="/analytics" class="nav-link">Analytics</a>
+        <a href="/design-system" class="nav-link">Design System</a>
+        <a href="/admin" class="nav-link">Admin</a>
+        <a href="https://bookmarkconverter.replit.app" class="nav-link" target="_blank">Bookmark Converter</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Site Header -->
+  <header class="header">
+    <div class="container">
+      <span class="logo">Node12.com</span>
+      <span class="subtitle">SSL Manager</span>
+    </div>
+  </header>
+  
+  <!-- Page Title -->
+  <div class="page-title">
+    <div class="container">
+      <h1>SSL Certificate Manager</h1>
+      <p>Check and monitor SSL certificates for your domains</p>
+    </div>
+  </div>
+  
+  <!-- Main Content -->
+  <div class="container">
+    <div class="content">
+      <h2>Check SSL Certificate Status</h2>
+      <p>Enter a domain to check its SSL certificate status.</p>
+      
+      <div class="ssl-check">
+        <div class="input-group">
+          <input type="text" placeholder="Enter domain (e.g. node12.com)" value="node12.com">
+          <button>Check SSL</button>
+        </div>
+        
+        <div class="ssl-result">
+          <div class="result-header">
+            SSL Certificate Results for node12.com
+          </div>
+          <div class="result-body">
+            <div class="result-item">
+              <span class="result-label">Status:</span>
+              <span class="valid">Valid</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Issuer:</span>
+              <span>Let's Encrypt Authority X3</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Valid From:</span>
+              <span>May 1, 2025</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Valid Until:</span>
+              <span>July 30, 2025</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Days Remaining:</span>
+              <span>78 days</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

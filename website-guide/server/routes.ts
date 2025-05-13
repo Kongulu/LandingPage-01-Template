@@ -149,12 +149,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Define specific routes to serve the corresponding index.html files
   app.get('/', (req, res) => {
     console.log('[DEBUG] Home route hit');
-    res.sendFile(process.cwd() + '/client/index.html');
+    res.sendFile(process.cwd() + '/client/new-design.html');
   });
   
   app.get('/ssl', (req, res) => {
     console.log('[DEBUG] SSL route hit');
-    res.sendFile(process.cwd() + '/client/ssl/index.html');
+    res.sendFile(process.cwd() + '/client/ssl.html');
   });
   
   app.get('/analytics', (req, res) => {
