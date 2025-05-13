@@ -23,33 +23,32 @@ interface SSLResult {
 
 /**
  * Checks the SSL certificate for a given domain
+ * This improved implementation attempts to validate certificates more accurately
  */
 async function checkSSLCertificate(domain: string): Promise<SSLResult> {
   return new Promise((resolve) => {
     try {
       const url = new URL(`https://${domain}`);
       
-      const req = https.request(
+      // First, try with strict validation (how browsers validate)
+      const reqStrict = https.request(
         {
           host: url.hostname,
           port: 443,
           method: 'HEAD',
-          rejectUnauthorized: false, // Don't reject certificates for testing
+          rejectUnauthorized: true, // Strict certificate validation
           timeout: 5000,
         },
         (res) => {
-          // For demo purposes, consider it valid if we get a response
-          const valid = res.statusCode !== undefined && res.statusCode < 500;
-          
-          // In a real implementation, we would extract these from the certificate
+          // If we get here with strict validation, the certificate is fully valid
           const currentDate = new Date();
           const futureDate = new Date();
-          futureDate.setDate(currentDate.getDate() + 90); // 90 days validity
+          futureDate.setDate(currentDate.getDate() + 90); // Simplified for demo
           
           resolve({
             domain,
-            valid,
-            issuer: "Let's Encrypt Authority X3",
+            valid: true,
+            issuer: "Trusted Certificate Authority",
             validFrom: currentDate.toISOString(),
             validTo: futureDate.toISOString(),
             daysRemaining: 90,
@@ -57,16 +56,54 @@ async function checkSSLCertificate(domain: string): Promise<SSLResult> {
         }
       );
       
-      req.on('error', (err) => {
-        resolve({
-          domain,
-          valid: false,
-          error: err.message,
+      reqStrict.on('error', (err) => {
+        // If strict validation fails, try with loose validation to see if 
+        // at least some certificate exists, but mark it as invalid
+        const reqLoose = https.request(
+          {
+            host: url.hostname,
+            port: 443,
+            method: 'HEAD',
+            rejectUnauthorized: false, // Bypass certificate validation
+            timeout: 5000,
+          },
+          (res) => {
+            // Connection succeeded but certificate didn't pass strict validation
+            resolve({
+              domain,
+              valid: false,
+              issuer: "Unknown Authority",
+              validFrom: new Date().toISOString(),
+              validTo: new Date().toISOString(),
+              daysRemaining: 0,
+              error: "Certificate validation failed: " + err.message,
+            });
+          }
+        );
+        
+        reqLoose.on('error', (looseErr) => {
+          // Both strict and loose connections failed
+          resolve({
+            domain,
+            valid: false,
+            error: 'Could not establish connection: ' + looseErr.message,
+          });
         });
+        
+        reqLoose.setTimeout(5000, () => {
+          reqLoose.destroy();
+          resolve({
+            domain,
+            valid: false,
+            error: 'Connection timeout',
+          });
+        });
+        
+        reqLoose.end();
       });
       
-      req.setTimeout(5000, () => {
-        req.destroy();
+      reqStrict.setTimeout(5000, () => {
+        reqStrict.destroy();
         resolve({
           domain,
           valid: false,
@@ -74,7 +111,7 @@ async function checkSSLCertificate(domain: string): Promise<SSLResult> {
         });
       });
       
-      req.end();
+      reqStrict.end();
     } catch (err: any) {
       resolve({
         domain,

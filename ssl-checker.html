@@ -330,6 +330,22 @@
                     <div class="result-label">Days Remaining</div>
                     <div class="result-value" id="result-days">78 days</div>
                 </div>
+                
+                <!-- Error Information (only shown when there's an error) -->
+                <div class="result-row" id="error-container" style="display: none;">
+                    <div class="result-label">Error Details</div>
+                    <div class="result-value invalid" id="result-error">No errors</div>
+                </div>
+                
+                <!-- Browser Explanation -->
+                <div class="result-row" style="margin-top: 20px; flex-direction: column;">
+                    <div class="result-label" style="margin-bottom: 10px;">What This Means for Browsers</div>
+                    <div class="result-value" id="browser-explanation" style="font-size: 0.9rem; line-height: 1.5;">
+                        When a certificate is invalid, browsers will show a security warning like "Your connection is not private." 
+                        This happens when there are issues such as self-signed certificates, expired certificates, 
+                        or certificates not matching the domain name.
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -402,12 +418,57 @@
                         // Update the UI with the results
                         resultDomain.textContent = data.domain;
                         
+                        const errorContainer = document.getElementById('error-container');
+                        const resultError = document.getElementById('result-error');
+                        const browserExplanation = document.getElementById('browser-explanation');
+                        
                         if (data.valid) {
                             resultStatus.textContent = 'Valid';
                             resultStatus.className = 'result-value valid';
+                            
+                            // Hide error details
+                            errorContainer.style.display = 'none';
+                            
+                            // Update browser explanation
+                            browserExplanation.innerHTML = 
+                                'This certificate is valid and secure. Browsers will show a padlock icon and allow ' + 
+                                'secure connections without warnings. Users can safely enter sensitive information ' +
+                                'on this site.';
                         } else {
                             resultStatus.textContent = 'Invalid';
                             resultStatus.className = 'result-value invalid';
+                            
+                            // Show error details if available
+                            if (data.error) {
+                                errorContainer.style.display = 'flex';
+                                resultError.textContent = data.error;
+                                
+                                // Customize the browser explanation based on the error
+                                if (data.error.includes('CERT_COMMON_NAME_INVALID')) {
+                                    browserExplanation.innerHTML = 
+                                        'The certificate is not valid for this domain name. This often happens when a certificate ' +
+                                        'was issued for a different domain (e.g., www.example.com vs example.com). ' +
+                                        'Browsers will show a "Your connection is not private" warning.';
+                                } else if (data.error.includes('CERT_HAS_EXPIRED')) {
+                                    browserExplanation.innerHTML = 
+                                        'The certificate has expired. The site owner needs to renew the SSL certificate. ' +
+                                        'Browsers will show a security warning until this is fixed.';
+                                } else if (data.error.includes('UNABLE_TO_VERIFY_LEAF_SIGNATURE')) {
+                                    browserExplanation.innerHTML = 
+                                        'This appears to be a self-signed certificate or one not issued by a trusted authority. ' +
+                                        'Browsers will display a security warning when users visit this site.';
+                                } else {
+                                    browserExplanation.innerHTML = 
+                                        'This certificate has validation issues. Browsers will show security warnings ' +
+                                        'when users try to access this site. Users will need to click through security ' +
+                                        'warnings, which is not recommended for sensitive information.';
+                                }
+                            } else {
+                                errorContainer.style.display = 'none';
+                                browserExplanation.innerHTML = 
+                                    'This certificate has validation issues. Browsers will show security warnings ' +
+                                    'when users try to access this site.';
+                            }
                         }
                         
                         resultIssuer.textContent = data.issuer || 'N/A';
