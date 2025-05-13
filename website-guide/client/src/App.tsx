@@ -4,6 +4,7 @@ import Admin from "@/pages/Admin";
 import Analytics from "@/pages/Analytics";
 import DesignSystemPage from "@/pages/DesignSystemPage";
 import SSLPage from "@/pages/SSLPage";
+import TestPage from "@/pages/TestPage";
 import NotFound from "@/pages/not-found";
 import { Toaster } from "@/components/ui/toaster";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -21,16 +22,22 @@ function Router() {
   useEffect(() => {
     // Show a welcome feedback message when the app loads
     feedback.info("Welcome to the Project Separation Guide!");
-  }, []);
+    
+    // Log current path for debugging
+    console.log("Current path:", location);
+  }, [location]);
   
   return (
     <PageTransition location={location}>
       <Switch>
+        {/* Routes are now relative to the base path set in main.tsx */}
         <Route path="/" component={Home} />
         <Route path="/admin" component={Admin} />
         <Route path="/analytics" component={Analytics} />
         <Route path="/design-system" component={DesignSystemPage} />
         <Route path="/ssl" component={SSLPage} />
+        <Route path="/test" component={TestPage} />
+        {/* Catch-all route must be last */}
         <Route component={NotFound} />
       </Switch>
     </PageTransition>
