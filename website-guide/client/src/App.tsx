@@ -14,7 +14,7 @@ import QuickTips from "@/components/QuickTips";
 import FeedbackContainer from "@/components/FeedbackSystem";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
 import { feedback } from "@/components/FeedbackSystem";
-import NavigationMenu from "@/components/NavigationMenu";
+// Navigation is now handled by the Header component
 
 function getCurrentPath() {
   // Get the pathname from the current URL
@@ -63,7 +63,6 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
-        <NavigationMenu />
         <Router />
         <QuickTips />
         <FeedbackContainer position="bottom-right" />
