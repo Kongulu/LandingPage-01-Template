@@ -27,7 +27,7 @@ async function main() {
 
   // Start the server
   const PORT = process.env.PORT || 5000;
-  server.listen(PORT, "0.0.0.0", () => {
+  server.listen(PORT, () => {
     log(`serving on port ${PORT}`);
   });
 }

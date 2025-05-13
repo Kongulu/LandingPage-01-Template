@@ -143,45 +143,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     next();
   });
   
-  // Explicitly define each route for clarity
+  // Serve static files from the client directory
+  app.use(express.static(process.cwd() + '/client'));
+  
+  // Define specific routes to serve the corresponding index.html files
+  app.get('/', (req, res) => {
+    console.log('[DEBUG] Home route hit');
+    res.sendFile(process.cwd() + '/client/index.html');
+  });
+  
   app.get('/ssl', (req, res) => {
     console.log('[DEBUG] SSL route hit');
-    res.sendFile(process.cwd() + '/client/index.html');
+    res.sendFile(process.cwd() + '/client/ssl/index.html');
   });
   
   app.get('/analytics', (req, res) => {
     console.log('[DEBUG] Analytics route hit');
-    res.sendFile(process.cwd() + '/client/index.html');
+    res.sendFile(process.cwd() + '/client/analytics/index.html');
   });
   
   app.get('/design-system', (req, res) => {
     console.log('[DEBUG] Design System route hit');
-    res.sendFile(process.cwd() + '/client/index.html');
+    res.sendFile(process.cwd() + '/client/design-system/index.html');
   });
   
   app.get('/test', (req, res) => {
     console.log('[DEBUG] Test route hit');
-    res.sendFile(process.cwd() + '/client/index.html');
+    res.sendFile(process.cwd() + '/client/test/index.html');
   });
   
   app.get('/admin', (req, res) => {
     console.log('[DEBUG] Admin route hit');
-    res.sendFile(process.cwd() + '/client/index.html');
+    res.sendFile(process.cwd() + '/client/admin/index.html');
   });
   
-  // This is critical for SPA routing - send all remaining non-API routes to index.html
-  // so that the React router can handle them
-  app.use('*', (req, res, next) => {
+  // Fallback route for any other routes - serve main index.html
+  app.use('*', (req, res) => {
     console.log('[DEBUG] Catch-all route hit for URL:', req.originalUrl);
-    
-    // If it's an API request or a static file request, continue to the next handler
-    if (req.originalUrl.startsWith('/api/') || req.originalUrl.includes('.')) {
-      console.log('[DEBUG] Skipping catch-all for API/static request');
-      return next();
-    }
-    
-    console.log('[DEBUG] Serving index.html for path:', req.originalUrl);
-    // For all other requests, serve the index.html file
     res.sendFile(process.cwd() + '/client/index.html');
   });
 
