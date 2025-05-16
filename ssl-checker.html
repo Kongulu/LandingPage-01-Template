@@ -405,8 +405,10 @@
             
             // Function to check SSL certificate
             function checkSSL(domain) {
-                // In a real application, this would be an API call
-                // For demo purposes, we'll use fetch to call our API endpoint
+                // Show the original domain in the results
+                const displayDomain = domain;
+                
+                // Make the API call to our backend
                 fetch(`/api/check-ssl?domain=${encodeURIComponent(domain)}`)
                     .then(response => {
                         if (!response.ok) {
@@ -416,7 +418,7 @@
                     })
                     .then(data => {
                         // Update the UI with the results
-                        resultDomain.textContent = data.domain;
+                        resultDomain.textContent = displayDomain;
                         
                         const errorContainer = document.getElementById('error-container');
                         const resultError = document.getElementById('result-error');

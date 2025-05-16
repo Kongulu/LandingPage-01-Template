@@ -178,11 +178,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // SSL certificate checking endpoint
   app.get('/api/check-ssl', async (req: Request, res: Response) => {
     try {
-      const domain = req.query.domain as string;
+      let domain = req.query.domain as string;
       
       if (!domain) {
         return res.status(400).json({ 
           error: 'Domain parameter is required' 
+        });
+      }
+      
+      // Clean the domain input to strip protocol and paths
+      try {
+        // If it's a URL with protocol, extract just the hostname
+        if (domain.includes('://')) {
+          const url = new URL(domain);
+          domain = url.hostname;
+        } else if (domain.includes('/')) {
+          // Handle cases where there's no protocol but has a path
+          domain = domain.split('/')[0];
+        }
+      } catch (e) {
+        return res.status(400).json({
+          error: 'Invalid URL format',
+          details: 'Please enter a valid domain name (e.g., example.com)'
         });
       }
       
