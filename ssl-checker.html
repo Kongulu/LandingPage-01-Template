@@ -425,10 +425,10 @@
                     document.getElementById('error-container').style.display = 'none';
                     
                     // Add certificate details
-                    document.querySelector('[data-field="issuer"]').textContent = "Let's Encrypt R3";
-                    document.querySelector('[data-field="valid-from"]').textContent = currentDate.toISOString().split('T')[0];
-                    document.querySelector('[data-field="valid-to"]').textContent = expiryDate.toISOString().split('T')[0];
-                    document.querySelector('[data-field="days-remaining"]').textContent = "90";
+                    document.getElementById('result-issuer').textContent = "Let's Encrypt R3";
+                    document.getElementById('result-valid-from').textContent = currentDate.toISOString().split('T')[0];
+                    document.getElementById('result-valid-to').textContent = expiryDate.toISOString().split('T')[0];
+                    document.getElementById('result-days').textContent = "90 days";
                     
                     // Update browser explanation
                     document.getElementById('browser-explanation').innerHTML = 
