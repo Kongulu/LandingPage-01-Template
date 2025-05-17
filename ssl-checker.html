@@ -408,8 +408,23 @@
                 // Show the original domain in the results
                 const displayDomain = domain;
                 
-                // Make the API call to our backend
-                fetch(`/api/check-ssl?domain=${encodeURIComponent(domain)}`)
+                // First, get a CSRF token
+                fetch('/api/csrf-token')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to get CSRF token');
+                        }
+                        return response.json();
+                    })
+                    .then(tokenData => {
+                        // Make the API call to our backend with CSRF token
+                        const url = `/api/check-ssl?domain=${encodeURIComponent(domain)}&_csrf=${tokenData.csrfToken}`;
+                        return fetch(url, {
+                            headers: {
+                                'CSRF-Token': tokenData.csrfToken
+                            }
+                        });
+                    })
                     .then(response => {
                         if (!response.ok) {
                             throw new Error('Network response was not ok');

@@ -1,10 +1,11 @@
-import type { Express, Request, Response } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import path from "path";
 import { fileURLToPath } from 'url';
 import https from 'https';
 import { URL } from 'url';
+import csrf from 'csurf';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -146,6 +147,22 @@ async function checkSSLCertificate(domain: string): Promise<SSLResult> {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // CSRF protection middleware for API routes
+  const csrfProtection = csrf({ cookie: true });
+  
+  // Error handler for CSRF token errors
+  app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+    if (err.code === 'EBADCSRFTOKEN') {
+      // Handle CSRF token errors
+      return res.status(403).json({
+        error: 'Invalid or missing CSRF token',
+        message: 'Form submission failed due to security validation'
+      });
+    }
+    // Pass other errors to the next middleware
+    next(err);
+  });
+
   // API routes for Node12.com project guide
   app.get('/api/guide', (req, res) => {
     res.json({
@@ -173,6 +190,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       ]
     });
+  });
+
+  // API endpoint to get a CSRF token
+  app.get('/api/csrf-token', csrfProtection, (req, res) => {
+    // Send the CSRF token to the client
+    res.json({ csrfToken: req.csrfToken() });
   });
 
   // SSL certificate checking endpoint
@@ -214,11 +237,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Route for the landing page
   app.get('/', (req, res) => {
+    // Add CSRF token to page for forms
     res.sendFile(path.join(rootDir, 'index.html'));
   });
 
-  // Route for the SSL checker page
-  app.get('/ssl-checker', (req, res) => {
+  // Route for the SSL checker page with CSRF protection
+  app.get('/ssl-checker', csrfProtection, (req, res) => {
+    // Pass the CSRF token to the page
     res.sendFile(path.join(rootDir, 'ssl-checker.html'));
   });
 
