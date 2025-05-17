@@ -408,22 +408,23 @@
                 // Show the original domain in the results
                 const displayDomain = domain;
                 
-                // Add real certificate check link for node12.com
-                if (domain === 'node12.com' || domain === 'www.node12.com') {
-                    // Add a link to SSL Labs for real verification
-                    const sslLabsLink = document.createElement('div');
-                    sslLabsLink.className = 'mt-4 info-box';
-                    sslLabsLink.innerHTML = `
-                        <strong>External Verification:</strong> 
-                        <a href="https://www.ssllabs.com/ssltest/analyze.html?d=${domain}" target="_blank" rel="noopener">
-                            View detailed SSL report at SSL Labs
-                        </a>
-                        <p class="mt-2 text-sm">SSL Labs provides independent verification of certificate validity and security ratings.</p>
-                    `;
-                    
-                    // Add this element to the form after submission
-                    document.querySelector('.check-form').appendChild(sslLabsLink);
+                // Always add link to SSL Labs for independent verification
+                const sslLabsLink = document.createElement('div');
+                sslLabsLink.className = 'mt-4 info-box';
+                sslLabsLink.innerHTML = `
+                    <strong>External Verification:</strong> 
+                    <a href="https://www.ssllabs.com/ssltest/analyze.html?d=${domain}" target="_blank" rel="noopener">
+                        View detailed SSL report at SSL Labs
+                    </a>
+                    <p class="mt-2 text-sm">SSL Labs provides independent verification of certificate validity and security ratings.</p>
+                `;
+                
+                // Add this element to the form after submission
+                const existingLink = document.querySelector('.info-box');
+                if (existingLink) {
+                    existingLink.remove(); // Remove existing link if present
                 }
+                document.querySelector('.check-form').appendChild(sslLabsLink);
                 
                 // For all other domains, use the API
                 fetch('/api/csrf-token')
