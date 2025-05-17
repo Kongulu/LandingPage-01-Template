@@ -271,11 +271,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Host detection middleware to serve appropriate content
-  app.use((req, res, next) => {
+  app.use((req: Request, res: Response, next: NextFunction) => {
     const host = req.get('host') || '';
-    // Store host info for use in routes
-    req.locals = req.locals || {};
-    req.locals.host = host;
+    // Store host info in request
+    (req as any).hostDomain = host;
     next();
   });
 
