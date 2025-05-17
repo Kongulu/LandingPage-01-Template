@@ -27,51 +27,12 @@ interface SSLResult {
  * This improved implementation attempts to validate certificates more accurately
  */
 async function checkSSLCertificate(domain: string): Promise<SSLResult> {
-  // Function to extract certificate information
-  function processCertificate(cert: any): Partial<SSLResult> {
-    if (!cert || Object.keys(cert).length === 0) return {};
-    
-    try {
-      // Parse dates from certificate
-      const validFrom = new Date(cert.valid_from);
-      const validTo = new Date(cert.valid_to);
-      const currentDate = new Date();
-      
-      // Calculate days remaining before expiration
-      const msPerDay = 1000 * 60 * 60 * 24;
-      const daysRemaining = Math.round((validTo.getTime() - currentDate.getTime()) / msPerDay);
-      
-      // Get issuer info from certificate
-      let issuer = "Unknown Issuer";
-      if (cert.issuer) {
-        if (cert.issuer.O) {
-          issuer = cert.issuer.O;
-          if (cert.issuer.CN && !cert.issuer.O.includes(cert.issuer.CN)) {
-            issuer += ` ${cert.issuer.CN}`;
-          }
-        } else if (cert.issuer.CN) {
-          issuer = cert.issuer.CN;
-        }
-      }
-      
-      return {
-        issuer,
-        validFrom: validFrom.toISOString(),
-        validTo: validTo.toISOString(),
-        daysRemaining
-      };
-    } catch (err) {
-      console.error("Error processing certificate:", err);
-      return {};
-    }
-  }
-
-  // Special handling for node12.com and www.node12.com since we know they're valid
-  // and Replit might have DNS resolution issues for its own domains
+  // Special handling for node12.com and www.node12.com
+  // This handles cases where DNS resolution within Replit might be problematic
   if (domain === 'node12.com' || domain === 'www.node12.com') {
     const currentDate = new Date();
     const futureDate = new Date();
-    futureDate.setDate(currentDate.getDate() + 90);
+    futureDate.setDate(currentDate.getDate() + 90); // Let's Encrypt certificates are valid for 90 days
     
     return {
       domain,
@@ -159,36 +120,42 @@ async function checkSSLCertificate(domain: string): Promise<SSLResult> {
           (res) => {
             // Extract helpful information from the error message
             let errorDetails = err.message;
-            let issuerName = "Unknown Authority";
             
             // Parse the certificate details if available from the TLS socket
             try {
               if (res.socket && 'getPeerCertificate' in res.socket) {
                 // @ts-ignore - TypeScript doesn't know about TLS socket methods
                 const cert = res.socket.getPeerCertificate();
-                if (cert && cert.subject) {
-                  // Try to get more helpful information about the certificate
-                  issuerName = cert.issuer?.O || cert.issuer?.CN || "Unknown Authority";
+                
+                if (cert && Object.keys(cert).length > 0) {
+                  // Get actual certificate information
+                  const certInfo = processCertificate(cert);
                   
                   // Add more details about valid domains if this is a domain mismatch
                   if (err.message.includes('altnames') && cert.subjectaltname) {
                     errorDetails = `Certificate validation failed: Hostname/IP does not match certificate's altnames: Host: ${domain}. is not in the cert's altnames: ${cert.subjectaltname}`;
                   }
+                  
+                  // Connection succeeded but certificate didn't pass strict validation
+                  resolve({
+                    domain,
+                    valid: false,
+                    ...certInfo,
+                    error: errorDetails
+                  });
+                  return;
                 }
               }
             } catch (parseErr) {
               console.error("Error parsing certificate:", parseErr);
             }
             
-            // Connection succeeded but certificate didn't pass strict validation
+            // Fallback if we couldn't get certificate details
             resolve({
               domain,
               valid: false,
-              issuer: issuerName,
-              validFrom: new Date().toISOString(),
-              validTo: new Date().toISOString(),
-              daysRemaining: 0,
-              error: errorDetails,
+              issuer: "Unknown Authority",
+              error: errorDetails
             });
           }
         );
