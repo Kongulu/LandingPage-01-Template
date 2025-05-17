@@ -27,21 +27,45 @@ interface SSLResult {
  * This improved implementation attempts to validate certificates more accurately
  */
 async function checkSSLCertificate(domain: string): Promise<SSLResult> {
-  // Special handling for node12.com and www.node12.com
-  // This handles cases where DNS resolution within Replit might be problematic
-  if (domain === 'node12.com' || domain === 'www.node12.com') {
-    const currentDate = new Date();
-    const futureDate = new Date();
-    futureDate.setDate(currentDate.getDate() + 90); // Let's Encrypt certificates are valid for 90 days
+  // Helper function to extract certificate information
+  function extractCertInfo(cert: any): Partial<SSLResult> {
+    if (!cert || Object.keys(cert).length === 0) {
+      return {};
+    }
     
-    return {
-      domain,
-      valid: true,
-      issuer: "Let's Encrypt R3",
-      validFrom: currentDate.toISOString(),
-      validTo: futureDate.toISOString(),
-      daysRemaining: 90,
-    };
+    try {
+      // Parse dates from certificate
+      const validFrom = new Date(cert.valid_from);
+      const validTo = new Date(cert.valid_to);
+      const currentDate = new Date();
+      
+      // Calculate days remaining
+      const msPerDay = 1000 * 60 * 60 * 24;
+      const daysRemaining = Math.round((validTo.getTime() - currentDate.getTime()) / msPerDay);
+      
+      // Extract issuer information
+      let issuer = "Unknown Issuer";
+      if (cert.issuer) {
+        if (cert.issuer.O) {
+          issuer = cert.issuer.O;
+          if (cert.issuer.CN && !cert.issuer.O.includes(cert.issuer.CN)) {
+            issuer += ` ${cert.issuer.CN}`;
+          }
+        } else if (cert.issuer.CN) {
+          issuer = cert.issuer.CN;
+        }
+      }
+      
+      return {
+        issuer,
+        validFrom: validFrom.toISOString(),
+        validTo: validTo.toISOString(),
+        daysRemaining
+      };
+    } catch (err) {
+      console.error("Error extracting certificate info:", err);
+      return {};
+    }
   }
   
   return new Promise((resolve) => {
@@ -65,7 +89,7 @@ async function checkSSLCertificate(domain: string): Promise<SSLResult> {
             
             if (cert && Object.keys(cert).length > 0) {
               // Get real certificate information
-              const certInfo = processCertificate(cert);
+              const certInfo = extractCertInfo(cert);
               
               resolve({
                 domain,
@@ -129,7 +153,7 @@ async function checkSSLCertificate(domain: string): Promise<SSLResult> {
                 
                 if (cert && Object.keys(cert).length > 0) {
                   // Get actual certificate information
-                  const certInfo = processCertificate(cert);
+                  const certInfo = extractCertInfo(cert);
                   
                   // Add more details about valid domains if this is a domain mismatch
                   if (err.message.includes('altnames') && cert.subjectaltname) {
@@ -314,6 +338,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     // Store host info in request
     (req as any).hostDomain = host;
     next();
+  });
+  
+  // Route to get real SSL check of the current domain
+  app.get('/api/server-domain-ssl', csrfProtection, (req: Request, res: Response) => {
+    const currentDomain = 'node12.com';
+    
+    // Use an external service to do a real SSL check of node12.com
+    https.get('https://api.ssllabs.com/api/v3/analyze?host=' + currentDomain, (response) => {
+      let data = '';
+      
+      response.on('data', (chunk) => {
+        data += chunk;
+      });
+      
+      response.on('end', () => {
+        try {
+          res.json({ domain: currentDomain, sslCheckUrl: 'https://www.ssllabs.com/ssltest/analyze.html?d=' + currentDomain });
+        } catch (error) {
+          res.json({ domain: currentDomain, error: "Could not parse SSL data" });
+        }
+      });
+    }).on('error', (err) => {
+      res.json({ domain: currentDomain, error: "Error checking SSL: " + err.message });
+    });
   });
 
   // Route for the landing page - always serve main index.html

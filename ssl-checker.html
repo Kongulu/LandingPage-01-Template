@@ -408,39 +408,21 @@
                 // Show the original domain in the results
                 const displayDomain = domain;
                 
-                // Special handling for node12.com domains directly in the client
-                // This avoids DNS resolution issues on the server
-                if (domain === 'node12.com' || domain === 'www.node12.com' || domain.includes('node12.com')) {
-                    // Create current date and future date (90 days ahead)
-                    const currentDate = new Date();
-                    const expiryDate = new Date();
-                    expiryDate.setDate(currentDate.getDate() + 90);
+                // Add real certificate check link for node12.com
+                if (domain === 'node12.com' || domain === 'www.node12.com') {
+                    // Add a link to SSL Labs for real verification
+                    const sslLabsLink = document.createElement('div');
+                    sslLabsLink.className = 'mt-4 info-box';
+                    sslLabsLink.innerHTML = `
+                        <strong>External Verification:</strong> 
+                        <a href="https://www.ssllabs.com/ssltest/analyze.html?d=${domain}" target="_blank" rel="noopener">
+                            View detailed SSL report at SSL Labs
+                        </a>
+                        <p class="mt-2 text-sm">SSL Labs provides independent verification of certificate validity and security ratings.</p>
+                    `;
                     
-                    // Display the results directly
-                    resultDomain.textContent = displayDomain;
-                    resultStatus.textContent = 'Valid';
-                    resultStatus.className = 'result-value valid';
-                    
-                    // Hide error container
-                    document.getElementById('error-container').style.display = 'none';
-                    
-                    // Add certificate details
-                    document.getElementById('result-issuer').textContent = "Let's Encrypt R3";
-                    document.getElementById('result-valid-from').textContent = currentDate.toISOString().split('T')[0];
-                    document.getElementById('result-valid-to').textContent = expiryDate.toISOString().split('T')[0];
-                    document.getElementById('result-days').textContent = "90 days";
-                    
-                    // Update browser explanation
-                    document.getElementById('browser-explanation').innerHTML = 
-                        'This certificate is valid and secure. Browsers will show a padlock icon and allow ' + 
-                        'secure connections without warnings. Users can safely enter sensitive information ' +
-                        'on this site.';
-                    
-                    // Show results and hide loading
-                    loadingDiv.style.display = 'none';
-                    resultsDiv.classList.add('show');
-                    
-                    return; // Exit the function early
+                    // Add this element to the form after submission
+                    document.querySelector('.check-form').appendChild(sslLabsLink);
                 }
                 
                 // For all other domains, use the API
