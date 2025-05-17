@@ -270,9 +270,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Route for the landing page
+  // Host detection middleware to serve appropriate content
+  app.use((req, res, next) => {
+    const host = req.get('host') || '';
+    // Store host info for use in routes
+    req.locals = req.locals || {};
+    req.locals.host = host;
+    next();
+  });
+
+  // Route for the landing page - always serve main index.html
   app.get('/', (req, res) => {
-    // Add CSRF token to page for forms
+    // Always serve the main landing page regardless of domain
     res.sendFile(path.join(rootDir, 'index.html'));
   });
 
@@ -280,6 +289,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/ssl-checker', csrfProtection, (req, res) => {
     // Pass the CSRF token to the page
     res.sendFile(path.join(rootDir, 'ssl-checker.html'));
+  });
+  
+  // Handle any route that might be trying to access the website guide
+  app.get('/project-separation-guide', (req, res) => {
+    // Redirect to the main page 
+    res.redirect('/');
   });
 
   const httpServer = createServer(app);
