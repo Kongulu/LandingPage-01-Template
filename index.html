@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Node12.com - Your Web Development Partner</title>
+    <title>Node12.com - Modern Web Development Solutions</title>
     <style>
         /* Basic Reset */
         * {
@@ -73,8 +73,10 @@
         }
         
         .hero h1 {
-            font-size: 2.5rem;
+            font-size: 4rem;
             margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
         
         .hero p {
@@ -110,6 +112,7 @@
             margin-bottom: 3rem;
             font-size: 2rem;
             color: #333;
+            text-transform: uppercase;
         }
         
         .features-grid {
@@ -146,12 +149,40 @@
             color: #666;
         }
         
+        /* SSL Checker Section */
+        .ssl-checker {
+            background-color: #f0f4ff;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-top: 3rem;
+            text-align: center;
+        }
+        
+        .ssl-checker h3 {
+            margin-bottom: 1rem;
+        }
+        
+        .ssl-checker-link {
+            display: inline-block;
+            color: #2563eb;
+            font-weight: bold;
+            text-decoration: none;
+            border-bottom: 2px solid #2563eb;
+            transition: all 0.3s;
+        }
+        
+        .ssl-checker-link:hover {
+            color: #1d4ed8;
+            transform: translateY(-2px);
+        }
+        
         /* Footer */
         footer {
             background-color: #333;
             color: white;
             padding: 3rem 0;
             text-align: center;
+            margin-top: 3rem;
         }
         
         .footer-links {
@@ -197,7 +228,7 @@
             }
             
             .hero h1 {
-                font-size: 2rem;
+                font-size: 2.5rem;
             }
             
             .hero p {
@@ -213,8 +244,6 @@
             <div class="logo">Node12.com</div>
             <ul class="nav-links">
                 <li><a href="#">Home</a></li>
-                <li><a href="#">Features</a></li>
-                <li><a href="#">Pricing</a></li>
                 <li><a href="#">Contact</a></li>
             </ul>
         </div>
@@ -223,8 +252,8 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="container">
-            <h1>Modern Web Development Solutions</h1>
-            <p>We provide cutting-edge web development services to help your business thrive in the digital world.</p>
+            <h1>THRIVE</h1>
+            <p>Modern Web Development Solutions</p>
             <a href="#" class="cta-button">Get Started</a>
         </div>
     </section>
@@ -232,7 +261,7 @@
     <!-- Features Section -->
     <section class="features">
         <div class="container">
-            <h2 class="section-title">Our Features</h2>
+            <h2 class="section-title">SERVICES</h2>
             <div class="features-grid">
                 <div class="feature-card">
                     <div class="feature-icon">🚀</div>
@@ -249,11 +278,13 @@
                     <h3>Responsive Design</h3>
                     <p>All our websites are fully responsive, ensuring a perfect experience across all devices and screen sizes.</p>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔍</div>
-                    <h3>NodeDiagnostics</h3>
-                    <p>Quickly identify and resolve server issues with our powerful diagnostics tool. <a href="/ssl-checker" style="color: #2563eb; text-decoration: underline; font-weight: bold;">Run SSL Checker</a></p>
-                </div>
+            </div>
+            
+            <!-- SSL Checker Call-to-action -->
+            <div class="ssl-checker">
+                <h3>Site Security Check</h3>
+                <p>Quickly identify potential security issues with our SSL Certificate Checker</p>
+                <a href="/ssl-checker" class="ssl-checker-link">Run SSL Checker</a>
             </div>
         </div>
     </section>
